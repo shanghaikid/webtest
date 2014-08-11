@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>detect div overflow</title>
+</head>
+
+<style>
+div.rounded {
+   background-color:#FFF;
+   height: 20px;
+   line-height: 20px;
+   border:1px #c60 solid;
+   width:100px;
+   font-size:11px;
+   overflow:hidden;
+   text-overflow: ellipsis;
+   word-wrap: nowrap;
+   padding-left: 11px;
+
+}
+</style>
+<body>
+
+<div id="tempDiv" class="rounded">
+    abcdefghijklmnoqpsfd
+</div>
+
+<script type="text/javascript">
+  var div = document.getElementById('tempDiv');
+  console.log(div.offsetWidth, div.scrollWidth);
+
+  var cvs = document.createElement('canvas');
+
+  console.log(cvs.getContext('2d').measureText(div.innerText));
+
+</script>
+
+</body>
+</html>
