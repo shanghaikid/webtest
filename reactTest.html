@@ -106,7 +106,7 @@ var Page = React.createClass({
     this.setState({
       buttonClicked: !this.state.buttonClicked
     })
-    this.refs.modal.setState({opened: true});
+    this.refs.modal.setState({opened: this.state.buttonClicked});
   },
   render: function() {
     return (
