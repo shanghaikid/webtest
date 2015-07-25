@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Slots test</title>
+<script type="text/javascript" src="./../js/d3.min.js"></script>
+</head>
+<body>
+<input type="button" value="update slot" onclick="updateSlot()" />
+</body>
+</html>
+
+<script type="text/javascript">
+var chart = {
+    lines: null,
+    linesMap: {},
+    slots: {},
+    slot: 11,
+    init: function() {
+        for (var i = 0; i < this.slot ; i ++) {
+            this.slots[i] = undefined;
+        }
+    },
+    addLine: function(line) {
+        console.log('add line', line);
+    },
+    removeLine: function(line) {
+        console.log('remove line', line);
+    },
+    getNextAvailableSlot: function() {
+        for (var slot in this.slots) {
+            if (this.slots.hasOwnProperty(slot) && this.slots[slot] === undefined) {
+                return slot;
+            }
+        }
+    },
+    update: function(lines) {
+        this.lines = lines;
+        this.updateMap();
+    },
+    updateMap: function() {
+        this.updateLineMap();
+        this.updateSlot();
+    },
+    updateLineMap: function() {
+        // console.log('old line map is', this.linesMap);
+        this.lines.forEach(function(line) {
+            var oldLine = this.getLine(line.name);
+            if (oldLine) {
+                // console.log('old line found', oldLine.name);
+                line.slot = oldLine.slot
+            }
+        }, this);
+        this.linesMap = {};
+        this.lines.forEach(function(line) {
+            this.linesMap[line.name] = line;
+        }, this);
+        console.log('update line map', this.linesMap);
+    },
+    getLine: function(name) {
+        return this.linesMap[name];
+    },
+    updateSlot: function() {
+        this.init();
+        this.lines.forEach(function(line) {
+            if (line.slot) this.slots[line.slot] = line.name;
+        }, this);
+        this.lines.forEach(function(line) {
+            line.slot = line.slot ? line.slot : this.getNextAvailableSlot();
+            this.slots[line.slot] = line.name;
+        }, this);
+        console.log('update slot', this.slots)
+    }
+}
+
+chart.init();
+/////////////////////////////////////////
+function updateSlot(){
+    var line = getLine();
+    while (line.length === 0) {
+        line = getLine();
+    }
+    chart.update(line);
+}
+function getLine() {
+    var letter = 'abcdefghijklmnopqrstuvwkyz0123456789';
+    var ids = d3.shuffle(d3.range(0, Math.floor(Math.random()*10)));
+    return ids.map(function(id) {
+        return {
+            name: 'line_' + letter[id]
+        }
+    });
+}
+</script>
