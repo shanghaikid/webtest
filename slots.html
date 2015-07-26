@@ -3,7 +3,7 @@
 <head>
 <title>Slots test</title>
 <meta charset="UTF-8" />
-<script type="text/javascript" src="./../js/d3.min.js"></script>
+<script type="text/javascript" src="./../d3/d3.min.js"></script>
 </head>
 <body>
 <input type="button" value="Update Index" onclick="updateIndex()" />
@@ -27,6 +27,13 @@ var chart = {
             this.lines.push(line);
             this.updateIndex();
         }
+    },
+    keepLines: function(lines) {
+        console.log('keep lines', lines);
+        this.lines = this.lines.filter(function(line) {
+            return lines.indexOf(line.name) !== -1;
+        });
+        this.updateIndex();
     },
     removeLine: function(lineName) {
         console.log('remove line', lineName);
