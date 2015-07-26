@@ -5,7 +5,7 @@
 <script type="text/javascript" src="./../js/d3.min.js"></script>
 </head>
 <body>
-<input type="button" value="update slot" onclick="updateSlot()" />
+<input type="button" value="Update Index" onclick="updateIndex()" />
 </body>
 </html>
 
@@ -13,23 +13,32 @@
 var chart = {
     lines: null,
     linesMap: {},
-    slots: {},
-    slot: 11,
-    init: function() {
-        for (var i = 0; i < this.slot ; i ++) {
-            this.slots[i] = undefined;
+    indexes: {},
+    index: 11,
+    initIndexes: function() {
+        for (var i = 0; i < this.index ; i ++) {
+            this.indexes[i] = undefined;
         }
     },
     addLine: function(line) {
         console.log('add line', line);
+        if (!this.getLine(line.name)) {
+            this.lines.push(line);
+            this.updateMap();
+        }
     },
-    removeLine: function(line) {
-        console.log('remove line', line);
+    removeLine: function(lineName) {
+        console.log('remove line', lineName);
+        this.lines = this.lines.filter(function(l) {
+            return l.name !== lineName;
+        });
+        this.updateMap();
+
     },
-    getNextAvailableSlot: function() {
-        for (var slot in this.slots) {
-            if (this.slots.hasOwnProperty(slot) && this.slots[slot] === undefined) {
-                return slot;
+    getNextAvailableIndex: function() {
+        for (var index in this.indexes) {
+            if (this.indexes.hasOwnProperty(index) && this.indexes[index] === undefined) {
+                return index;
             }
         }
     },
@@ -39,42 +48,38 @@ var chart = {
     },
     updateMap: function() {
         this.updateLineMap();
-        this.updateSlot();
+        //this.updateSlot();
     },
     updateLineMap: function() {
         // console.log('old line map is', this.linesMap);
+        this.initIndexes();
+        // get old lines position and index
         this.lines.forEach(function(line) {
             var oldLine = this.getLine(line.name);
             if (oldLine) {
                 // console.log('old line found', oldLine.name);
-                line.slot = oldLine.slot
+                line.index = oldLine.index;
+                this.indexes[line.index] = line.name;
             }
         }, this);
+        // rebuild map and index
         this.linesMap = {};
         this.lines.forEach(function(line) {
             this.linesMap[line.name] = line;
+            line.index = line.index ? line.index : this.getNextAvailableIndex();
+            this.indexes[line.index] = line.name;
         }, this);
         console.log('update line map', this.linesMap);
+        console.log('update index', this.indexes);
     },
     getLine: function(name) {
         return this.linesMap[name];
-    },
-    updateSlot: function() {
-        this.init();
-        this.lines.forEach(function(line) {
-            if (line.slot) this.slots[line.slot] = line.name;
-        }, this);
-        this.lines.forEach(function(line) {
-            line.slot = line.slot ? line.slot : this.getNextAvailableSlot();
-            this.slots[line.slot] = line.name;
-        }, this);
-        console.log('update slot', this.slots)
     }
 }
 
-chart.init();
+chart.initIndexes();
 /////////////////////////////////////////
-function updateSlot(){
+function updateIndex(){
     var line = getLine();
     while (line.length === 0) {
         line = getLine();
